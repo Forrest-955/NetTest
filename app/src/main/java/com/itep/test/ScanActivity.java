@@ -2,6 +2,7 @@ package com.itep.test;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -37,7 +38,7 @@ public class ScanActivity extends Activity {
     private TextView tvResult;
     private Button btnGetResult;
     private SerialPortManager mSerialPortManager;
-    private String path = "/mnt/internal_sd/tc/system/upload.txt";
+    private String path = Environment.getExternalStoragePublicDirectory("Download") + "/scan.txt";
 
     String TAG = "scanner";
     @Override
@@ -96,7 +97,7 @@ public class ScanActivity extends Activity {
                                 tvHint.setText("读取成功");
                                 tvSuccess.setText(count + "");
                                 etSN.setText(new String(bytes));
-                                writeToFile("/mnt/internal_sd/tc/system/upload.txt", "测试次数：" + time + "成功次数：" + count);
+                                writeToFile(path, "测试次数：" + time + "成功次数：" + count);
 //                                close();
                             }
                         }

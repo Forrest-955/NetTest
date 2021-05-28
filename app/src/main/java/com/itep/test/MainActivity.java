@@ -8,6 +8,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
@@ -80,8 +81,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        downloadresPath = getApplicationContext().getFilesDir().getAbsolutePath() + "/download.txt";
-        uploadresPath = getApplicationContext().getFilesDir().getAbsolutePath() + "/upload.txt";
+//        downloadresPath = getApplicationContext().getFilesDir().getAbsolutePath() + "/download.txt";
+        downloadresPath = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath() + "/download.txt";
+//        uploadresPath = getApplicationContext().getFilesDir().getAbsolutePath() + "/upload.txt";
+        uploadresPath = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath() + "/upload.txt";
         tvLog = findViewById(R.id.tv_log);
         tvResult = findViewById(R.id.tv_result);
         tvTXT = findViewById(R.id.tv_txt);
@@ -207,7 +210,8 @@ public class MainActivity extends AppCompatActivity {
             String imgName = "AB_Standard_V3.2.0.3.zip";
 //            String savePath= "/mnt/internal_sd/tc/system/tmp/";
 //            String savePath= "/mnt/internal_sd/mt/tmp/";
-            String savePath= getApplicationContext().getFilesDir().getAbsolutePath();
+//            String savePath = getApplicationContext().getFilesDir().getAbsolutePath();
+            String savePath = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath();
 //            imgPath="/Image";
 //            imgName="test.zip";
             FtpUtil ftpUtil=new FtpUtil();
@@ -271,7 +275,8 @@ public class MainActivity extends AppCompatActivity {
             String imgName = "mt207c10-firmware_V1.0.5.0_20210209.img";
 //            String savePath= "/mnt/internal_sd/tc/system/tmp/mt207c10-firmware_V1.0.5.0_20210209.img";
 //            String savePath= "/mnt/internal_sd/mt/tmp/mt207c10-firmware_V1.0.5.0_20210209.img";
-            String savePath= getApplicationContext().getFilesDir().getAbsolutePath() + "/mt207c10-firmware_V1.0.5.0_20210209.img";
+//            String savePath= getApplicationContext().getFilesDir().getAbsolutePath() + "/mt207c10-firmware_V1.0.5.0_20210209.img";
+            String savePath= Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath() + "/mt207c10-firmware_V1.0.5.0_20210209.img";
             imgPath="/Image";
 //            imgName="test.zip";
             FtpUtil ftpUtil=new FtpUtil();
