@@ -207,7 +207,8 @@ public class MainActivity extends AppCompatActivity {
 //            String imgPath = "/14 Linux终端镜像/0-通用镜像/V2.0.0.0";
 //            String imgName = "CCLinuxV2.0.0.0_18020101.iso";
             String imgPath = "/test";
-            String imgName = "AB_Standard_V3.2.0.3.zip";
+//            String imgName = "AB_Standard_V3.2.0.3.zip";
+            String imgName = "test.zip";
 //            String savePath= "/mnt/internal_sd/tc/system/tmp/";
 //            String savePath= "/mnt/internal_sd/mt/tmp/";
 //            String savePath = getApplicationContext().getFilesDir().getAbsolutePath();
@@ -272,11 +273,13 @@ public class MainActivity extends AppCompatActivity {
 //            String imgPath = "/14 Linux终端镜像/0-通用镜像/V2.0.0.0";
             String imgPath = "/14 Linux终端镜像/0-通用镜像/V2.0.0.0";
 //            String imgName = "CCLinuxV2.0.0.0_18020101.iso";
-            String imgName = "mt207c10-firmware_V1.0.5.0_20210209.img";
+//            String imgName = "mt207c10-firmware_V1.0.5.0_20210209.img";
+            String imgName = "upload.zip";
 //            String savePath= "/mnt/internal_sd/tc/system/tmp/mt207c10-firmware_V1.0.5.0_20210209.img";
 //            String savePath= "/mnt/internal_sd/mt/tmp/mt207c10-firmware_V1.0.5.0_20210209.img";
 //            String savePath= getApplicationContext().getFilesDir().getAbsolutePath() + "/mt207c10-firmware_V1.0.5.0_20210209.img";
-            String savePath= Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath() + "/mt207c10-firmware_V1.0.5.0_20210209.img";
+//            String savePath= Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath() + "/mt207c10-firmware_V1.0.5.0_20210209.img";
+            String savePath= Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath() + "/test.zip";
             imgPath="/Image";
 //            imgName="test.zip";
             FtpUtil ftpUtil=new FtpUtil();
