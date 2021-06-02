@@ -18,18 +18,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name=".net.MainActivity">
+
+        </activity>
+        <activity android:name=".ScanActivity">
+
+        </activity>
+        <activity android:name=".WebViewActivity"/>
+        <activity android:name=".baking.AdPlayerActivity">
+
+        </activity>
+        <activity android:name="com.itep.test.emmc.EmmcActivity"/>
+        <activity android:name="com.itep.test.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ScanActivity">
-
-        </activity>
-        <activity android:name=".WebViewActivity"/>
     </application>
 
 </manifest>

@@ -6,7 +6,13 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Created by wagaranai on 2019/09/10.
@@ -79,5 +85,36 @@ public class Utils {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * 记录结果
+     * @param path
+     * @param value
+     */
+    public static void  writeToFile(String path, Object value) {
+        File file = new File(path);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(value.toString().getBytes());
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 读结果
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    public static String readTXT(String path) throws IOException {
+        File file = new File(path);
+        InputStream inputStream = new FileInputStream(file);
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String line = bufferedReader.readLine();
+        return line;
     }
 }

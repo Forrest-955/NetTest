@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/background_dark">
+
+    <TextView
+        android:id="@+id/tv_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        />
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="30pt"
+        android:textColor="@android:color/background_light"
+        android:text="未找到广告资源文件"
+        android:visibility="gone"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </androidx.viewpager.widget.ViewPager>
+
+
+    <com.itep.test.baking.CustomerVideoView
+        android:id="@+id/video_default"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <SurfaceView
+        android:id="@+id/video_ijk"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
+</RelativeLayout>
