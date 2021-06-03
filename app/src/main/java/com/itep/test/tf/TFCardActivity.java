@@ -1,4 +1,4 @@
-package com.itep.test.emmc;
+package com.itep.test.tf;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itep.mt.common.sys.SysCommand;
 import com.itep.test.R;
 import com.itep.test.Utils;
 
@@ -20,13 +21,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class EmmcActivity extends Activity {
-    private static final String TAG = "Emmc test";
+public class TFCardActivity extends Activity {
+    private static final String TAG = "TF test";
     private int readCount;
     private int readErr;
     private int copyCount;
     private int copyErr;
     private String path;
+    private String resPath;
     private Button btn_writefile;
     private Button btn_readfile;
     private Button btn_result;
@@ -36,7 +38,7 @@ public class EmmcActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_emmc);
+        setContentView(R.layout.activity_tf);
         btn_result = findViewById(R.id.btn_get_res);
         btn_writefile = findViewById(R.id.btn_write_file);
         btn_readfile = findViewById(R.id.btn_read_file);
@@ -47,7 +49,7 @@ public class EmmcActivity extends Activity {
             public void onClick(View view) {
                 String result = null;
                 try {
-                    result = Utils.readTXT(path + "/wemmc.txt") + "\n" + Utils.readTXT(path + "/remmc.txt");
+                    result = Utils.readTXT(resPath + "/wtf.txt") + "\n" + Utils.readTXT(resPath + "/rtf.txt");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -82,7 +84,8 @@ public class EmmcActivity extends Activity {
                 finish();
             }
         });
-        path = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath();
+        resPath = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath();
+        path = SysCommand.runCmdForResult("ls /storage/|grep -vE \"[emulated|self]\" | busybox sed \"s:^:/storage/: \" | head -1");
     }
 
     Handler handler = new Handler(new Handler.Callback() {
@@ -101,37 +104,39 @@ public class EmmcActivity extends Activity {
                                 }
                                 File f;
                                 if (copyCount % 2 == 0) {
-                                    f = new File(path + "/emmc2.zip");
+                                    f = new File(path + "/tf2.zip");
                                 } else {
-                                    f = new File(path + "/emmc1.zip");
+                                    f = new File(path + "/tf1.zip");
                                 }
                                 long startTime = System.currentTimeMillis();
                                 long size = Utils.getAvailableSize("/storage/emulated/0/");
                                 Log.e(TAG, "size:" + size + "length:" + f.length());
                                 if (copyCount % 2 == 0) {
                                     if (copyCount == 0) {
-                                        if (!cmdCopyFile(path + "/emmc.zip", path + "/emmc1.zip")) {
+                                        if (!cmdCopyFile(path + "/tf.zip", path + "/tf1.zip")) {
                                             copyErr++;
                                         }
                                     } else {
-                                        if (!cmdCopyFile(path + "/emmc2.zip", path + "/emmc1.zip")) {
+                                        if (!cmdCopyFile(path + "/tf2.zip", path + "/tf1.zip")) {
                                             copyErr++;
                                         }
                                         f.delete();
                                     }
                                 } else {
-                                    if (!cmdCopyFile(path + "/emmc1.zip", path + "/emmc2.zip")) {
+                                    if (!cmdCopyFile(path + "/tf1.zip", path + "/tf2.zip")) {
                                         copyErr++;
                                     }
                                     f.delete();
                                 }
                                 long costTime = System.currentTimeMillis() - startTime;
+
                                 copyCount++;
                                 tv_msg.setText("写入文件次数" + copyCount);
                                 Log.e(TAG, "写文件" + copyCount);
                                 double speed = 989.9 / costTime * 1000;
                                 String result = copyCount + "次写入，失败次数" + copyErr + ",写入速度" + String.format("%.2f", speed) + "M/s";
-                                Utils.writeToFile(path + "/wemmc.txt", result);
+                                Utils.writeToFile(resPath + "/wtf.txt", result);
+                                btn_writefile.setEnabled(true);
                                 tv_msg.setText(result);
                                 handler.sendEmptyMessageDelayed(0, 1000);
                             } else {
@@ -146,7 +151,7 @@ public class EmmcActivity extends Activity {
                         public void run() {
                             if (readCount < 100000) {
                                 long startTime = System.currentTimeMillis();
-                                String read = readStringFromFile(path + "/emmc.txt");
+                                String read = readStringFromFile(path + "/tf.txt");
                                 if (read.length() == 0) {
                                     readErr++;
                                 }
@@ -156,7 +161,8 @@ public class EmmcActivity extends Activity {
                                 tv_msg.setText("读取文件次数" + readCount);
                                 double speed = 989.9 / costTime * 1000;
                                 String result = readCount + "次读取，失败次数" + readErr + ",读取速度" + String.format("%.2f", speed) + "M/s";
-                                Utils.writeToFile(path + "/remmc.txt", result);
+                                Utils.writeToFile(resPath + "/rtf.txt", result);
+                                btn_readfile.setEnabled(true);
                                 tv_msg.setText(result);
                                 handler.sendEmptyMessageDelayed(1, 1000);
                             } else {

@@ -1,8 +1,13 @@
 package com.itep.test;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.os.StatFs;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -13,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 
 /**
  * Created by wagaranai on 2019/09/10.
@@ -104,6 +110,24 @@ public class Utils {
     }
 
     /**
+     * 添加结果
+     * @param path
+     * @param value
+     */
+    public static void addToFile(String path, String value) {
+        RandomAccessFile raf = null;
+        File file = new File(path);
+        try {
+            raf = new RandomAccessFile(file, "rw");
+            raf.seek(file.length());
+            raf.write(value.getBytes());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 读结果
      * @param path
      * @return
@@ -116,5 +140,35 @@ public class Utils {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String line = bufferedReader.readLine();
         return line;
+    }
+
+    public static void showToastMsg(Context context, String msg){
+        Toast.makeText(context,msg,Toast.LENGTH_LONG).show();
+    }
+
+    public static AlertDialog showRoundProcess(Context context, String title, String msg){
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(msg);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        return progressDialog;
+    }
+
+    public static AlertDialog showYesOrNo(Context context, String title, String msg
+            , DialogInterface.OnClickListener listener){
+        AlertDialog ad = new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton("确定", listener)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }).show();
+        ad.setCanceledOnTouchOutside(true);
+        return ad;
     }
 }

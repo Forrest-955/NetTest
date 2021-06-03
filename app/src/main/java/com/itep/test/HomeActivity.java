@@ -2,6 +2,7 @@ package com.itep.test;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,10 +10,17 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
+import com.itep.mt.common.sys.SysCommand;
 import com.itep.mt.common.sys.SysConf;
 import com.itep.test.baking.AdPlayerActivity;
+import com.itep.test.camera.Camera2Activity;
+import com.itep.test.camera.CameraActivity;
 import com.itep.test.emmc.EmmcActivity;
 import com.itep.test.net.MainActivity;
+import com.itep.test.tf.TFCardActivity;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeActivity extends Activity implements View.OnClickListener {
     private Context context;
@@ -22,6 +30,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private Button btnBaking;
     private Button btnCamera;
     private Button btnReboot;
+    private Timer timer = new Timer();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,6 +38,22 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_home);
         context = this;
         initView();
+        if (SysConf.getReboot() == 1) {
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    SysCommand.reboot();
+                }
+            };
+            timer.schedule(task, 6000);
+            Utils.showYesOrNo(context, "提示", "5s后重启，是否停止自动重启", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    SysConf.setReboot(0);
+                    timer.cancel();
+                }
+            });
+        }
     }
 
     private void initView() {
@@ -59,17 +84,25 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 startActivity(intent2);
                 break;
             case R.id.btn_tf_test:
-
+                Intent intent4 = new Intent(context, TFCardActivity.class);
+                startActivity(intent4);
                 break;
             case R.id.btn_baking_test:
                 Intent intent1 = new Intent(context, AdPlayerActivity.class);
                 startActivity(intent1);
                 break;
             case R.id.btn_camera_test:
-
+                Intent intent3 = new Intent(context, Camera2Activity.class);
+                startActivity(intent3);
                 break;
             case R.id.btn_reboot_test:
-
+                Utils.showYesOrNo(context, "提示", "是否开始自动重启", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SysConf.setReboot(1);
+                        SysCommand.reboot();
+                    }
+                });
                 break;
         }
     }

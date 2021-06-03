@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_msg"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"/>
+    <Button
+        android:id="@+id/btn_write_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="文件写入"
+        android:textSize="40sp" />
+    <Button
+        android:id="@+id/btn_read_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="文件读取"
+        android:textSize="40sp"/>
+    <Button
+        android:id="@+id/btn_get_res"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="获取测试结果"
+        android:textSize="40sp"/>
+    <Button
+        android:id="@+id/btn_close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="返回"
+        android:textSize="40sp"/>
+</LinearLayout>
