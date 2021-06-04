@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.0"
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.itep.test"
-        minSdkVersion 22
-        targetSdkVersion 29
+        minSdkVersion 21
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
     }
     buildTypes {
         release {
@@ -35,5 +36,8 @@ dependencies {
     implementation 'com.arialyy.aria:ftpComponent:3.8.6' //# 如果需要使用ftp，请增加该组件
     implementation 'com.arialyy.aria:sftpComponent:3.8.6' //# 如果需要使用ftp，请增加该组件
     implementation 'com.github.kongqw:AndroidSerialPort:1.0.0'
+    implementation project(path: ':MTCommon')
+    implementation project(path: ':ijkplayer-java')
+    implementation project(path: ':libCameraView')
 
 }

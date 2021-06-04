@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,9 +18,16 @@ import com.itep.test.baking.AdPlayerActivity;
 import com.itep.test.camera.Camera2Activity;
 import com.itep.test.camera.CameraActivity;
 import com.itep.test.emmc.EmmcActivity;
+import com.itep.test.hid.UartActivity;
+import com.itep.test.hid.UsbActivity;
 import com.itep.test.net.MainActivity;
 import com.itep.test.tf.TFCardActivity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,6 +39,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private Button btnBaking;
     private Button btnCamera;
     private Button btnReboot;
+    private Button btnUsb;
+    private Button btnUart;
     private Timer timer = new Timer();
 
     @Override
@@ -63,12 +74,16 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         btnBaking = findViewById(R.id.btn_baking_test);
         btnCamera = findViewById(R.id.btn_camera_test);
         btnReboot = findViewById(R.id.btn_reboot_test);
+        btnUsb = findViewById(R.id.btn_usb_test);
+        btnUart = findViewById(R.id.btn_uart_test);
         btnNet.setOnClickListener(this);
         btnEmmc.setOnClickListener(this);
         btnTF.setOnClickListener(this);
         btnBaking.setOnClickListener(this);
         btnCamera.setOnClickListener(this);
         btnReboot.setOnClickListener(this);
+        btnUsb.setOnClickListener(this);
+        btnUart.setOnClickListener(this);
     }
 
 
@@ -103,6 +118,14 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                         SysCommand.reboot();
                     }
                 });
+                break;
+            case R.id.btn_usb_test:
+                Intent intent5 = new Intent(context, UsbActivity.class);
+                startActivity(intent5);
+                break;
+            case R.id.btn_uart_test:
+                Intent intent6 = new Intent(context, UartActivity.class);
+                startActivity(intent6);
                 break;
         }
     }

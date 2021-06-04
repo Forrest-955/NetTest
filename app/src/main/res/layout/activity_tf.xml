@@ -12,14 +12,15 @@
         android:id="@+id/btn_write_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="文件写入"
+        android:text="文件写入/读取"
         android:textSize="40sp" />
     <Button
         android:id="@+id/btn_read_file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="文件读取"
-        android:textSize="40sp"/>
+        android:textSize="40sp"
+        android:visibility="gone"/>
     <Button
         android:id="@+id/btn_get_res"
         android:layout_width="match_parent"

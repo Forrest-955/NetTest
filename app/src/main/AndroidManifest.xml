@@ -42,6 +42,8 @@
         <activity android:name="com.itep.test.camera.CameraActivity"/>
         <activity android:name="com.itep.test.camera.Camera2Activity"/>
         <activity android:name="com.itep.test.tf.TFCardActivity"/>
+        <activity android:name="com.itep.test.hid.UsbActivity"/>
+        <activity android:name=".hid.UartActivity"/>
         <receiver android:name=".BootCompletedReceiver">
 
             <intent-filter>

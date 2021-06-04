@@ -57,19 +57,31 @@ public class Camera2Activity extends Activity {
     private TextureView mTextureView3;
     private TextureView mTextureView4;
     private static final int STATE_PREVIEW = 0;
-    private ImageReader mImageReader;
-    private CameraCaptureSession mCaptureSession;
-    private CameraDevice mCameraDevice;
-    private CaptureRequest.Builder mPreviewRequestBuilder;
-    private CaptureRequest mPreviewRequest;
-    private Handler mBackgroundHandler;
-    private HandlerThread mBackgroundThread;
+    private ImageReader mImageReader1;
+    private ImageReader mImageReader2;
+    private ImageReader mImageReader3;
+    private ImageReader mImageReader4;
+    private CameraCaptureSession mCaptureSession1;
+    private CameraCaptureSession mCaptureSession2;
+    private CameraCaptureSession mCaptureSession3;
+    private CameraCaptureSession mCaptureSession4;
+    private CameraDevice mCameraDevice1;
+    private CameraDevice mCameraDevice2;
+    private CameraDevice mCameraDevice3;
+    private CameraDevice mCameraDevice4;
+    private Handler mBackgroundHandler1;
+    private Handler mBackgroundHandler2;
+    private Handler mBackgroundHandler3;
+    private Handler mBackgroundHandler4;
+    private HandlerThread mBackgroundThread1;
+    private HandlerThread mBackgroundThread2;
+    private HandlerThread mBackgroundThread3;
+    private HandlerThread mBackgroundThread4;
     private int mState = STATE_PREVIEW;
     private static final int MAX_PREVIEW_WIDTH = 640;
     private static final int MAX_PREVIEW_HEIGHT = 480;
     private Context context;
     private File file;
-    private DualCamera dualCamera;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,21 +92,108 @@ public class Camera2Activity extends Activity {
         mTextureView2 = findViewById(R.id.textureView2);
         mTextureView3 = findViewById(R.id.textureView3);
         mTextureView4 = findViewById(R.id.textureView4);
-        dualCamera = getDualCamera(context);
-        startBackgroundThread();
+//        startBackgroundThread();
+        startBackgroundThread1();
+        startBackgroundThread2();
+        startBackgroundThread3();
+        startBackgroundThread4();
         initPermission();
 
         initTextureView1();
-//        initTextureView2();
-//        initTextureView3();
-//        initTextureView4();
+        initTextureView2();
+        initTextureView3();
+        initTextureView4();
     }
 
     private void initTextureView1() {
         if (mTextureView1.isAvailable()) {
-            initCameraV2(3);
+            initCameraV2(0);
         } else {
             mTextureView1.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+                @Override
+                public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                    initCameraV2(0);
+                }
+
+                @Override
+                public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
+
+                }
+
+                @Override
+                public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                    return false;
+                }
+
+                @Override
+                public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+                }
+            });
+        }
+    }
+
+    private void initTextureView2() {
+        if (mTextureView2.isAvailable()) {
+            initCameraV2(1);
+        } else {
+            mTextureView2.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+                @Override
+                public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                    initCameraV2(1);
+                }
+
+                @Override
+                public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
+
+                }
+
+                @Override
+                public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                    return false;
+                }
+
+                @Override
+                public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+                }
+            });
+        }
+    }
+
+    private void initTextureView3() {
+        if (mTextureView3.isAvailable()) {
+            initCameraV2(2);
+        } else {
+            mTextureView3.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+                @Override
+                public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                    initCameraV2(2);
+                }
+
+                @Override
+                public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
+
+                }
+
+                @Override
+                public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                    return false;
+                }
+
+                @Override
+                public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+                }
+            });
+        }
+    }
+
+    private void initTextureView4() {
+        if (mTextureView4.isAvailable()) {
+            initCameraV2(3);
+        } else {
+            mTextureView4.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
                 @Override
                 public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
                     initCameraV2(3);
@@ -118,117 +217,77 @@ public class Camera2Activity extends Activity {
         }
     }
 
-
-    /**
-     * 创建相机设备状态回调
-     */
-    private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
-        @RequiresApi(api = Build.VERSION_CODES.P)
+    private final CameraDevice.StateCallback mStateCallback1 = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
-            mCameraDevice = camera;
-            createCameraPreviewSession();
-//            config(camera);
+            mCameraDevice1 = camera;
+            createPreviewSession1(camera);
         }
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
             camera.close();
-            mCameraDevice = null;
         }
 
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
             camera.close();
-            mCameraDevice = null;
         }
     };
 
-    private static DualCamera getDualCamera(Context context) {
-        DualCamera dualCamera = new DualCamera();
-        //获取管理类
-        CameraManager manager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-        assert manager != null;
-        try {
-            //获取所有逻辑ID
-            String[] cameraIdList = manager.getCameraIdList();
-
-            //获取逻辑摄像头下拥有多个物理摄像头的类 作为双镜类
-            for (String id : cameraIdList) {
-                try {
-                    CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(id);
-                    Set<String> physicalCameraIds = cameraCharacteristics.getPhysicalCameraIds();
-                    Log.d(TAG, "逻辑ID：" + id + " 下的物理ID: " + Arrays.toString(physicalCameraIds.toArray()));
-                    if (physicalCameraIds.size() >= 2) {
-                        dualCamera.setLoginCameraID(id);
-                        Object[] objects = physicalCameraIds.toArray();
-                        //获取前两个物理摄像头作为双镜头
-                        dualCamera.setPhysicsCameraID1(String.valueOf(objects[0]));
-                        dualCamera.setPhysicsCameraID2(String.valueOf(objects[1]));
-                        return dualCamera;
-                    }
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+    private final CameraDevice.StateCallback mStateCallback2 = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            mCameraDevice2 = camera;
+            createPreviewSession2(camera);
         }
-        return null;
-    }
 
-
-    /**
-     * 配置摄像头参数
-     * @param cameraDevice
-     */
-    @RequiresApi(api = Build.VERSION_CODES.P)
-    public void config(CameraDevice cameraDevice){
-        try {
-            //构建输出参数  在参数中设置物理摄像头
-            List<OutputConfiguration> configurations = new ArrayList<>();
-            final CaptureRequest.Builder mPreViewBuidler = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-
-            //配置第一个物理摄像头
-            SurfaceTexture texture = mTextureView1.getSurfaceTexture();
-            OutputConfiguration outputConfiguration = new OutputConfiguration(new Surface(texture));
-            outputConfiguration.setPhysicalCameraId(dualCamera.getPhysicsCameraID1());
-            configurations.add(outputConfiguration);
-            mPreViewBuidler.addTarget(Objects.requireNonNull(outputConfiguration.getSurface()));
-
-            //配置第2个物理摄像头
-            SurfaceTexture texture2 = mTextureView2.getSurfaceTexture();
-            OutputConfiguration outputConfiguration2 = new OutputConfiguration(new Surface(texture2));
-            outputConfiguration2.setPhysicalCameraId(dualCamera.getPhysicsCameraID2());
-            configurations.add(outputConfiguration2);
-            mPreViewBuidler.addTarget(Objects.requireNonNull(outputConfiguration2.getSurface()));
-
-            //注册摄像头
-            SessionConfiguration sessionConfiguration = new SessionConfiguration(
-                    SessionConfiguration.SESSION_REGULAR,
-                    configurations,
-                    AsyncTask.SERIAL_EXECUTOR,
-                    new CameraCaptureSession.StateCallback() {
-                        @Override
-                        public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
-                            try {
-                                mCaptureSession = cameraCaptureSession;
-                                cameraCaptureSession.setRepeatingRequest(mPreViewBuidler.build(), null, mBackgroundHandler);
-                            } catch (CameraAccessException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        @Override
-                        public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
-
-                        }
-                    }
-            );
-            cameraDevice.createCaptureSession(sessionConfiguration);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+        @Override
+        public void onDisconnected(@NonNull CameraDevice camera) {
+            camera.close();
         }
-    }
+
+        @Override
+        public void onError(@NonNull CameraDevice camera, int error) {
+            camera.close();
+        }
+    };
+
+    private final CameraDevice.StateCallback mStateCallback3 = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            mCameraDevice3 = camera;
+            createPreviewSession3(camera);
+        }
+
+        @Override
+        public void onDisconnected(@NonNull CameraDevice camera) {
+            camera.close();
+        }
+
+        @Override
+        public void onError(@NonNull CameraDevice camera, int error) {
+            camera.close();
+        }
+    };
+
+    private final CameraDevice.StateCallback mStateCallback4 = new CameraDevice.StateCallback() {
+        @Override
+        public void onOpened(@NonNull CameraDevice camera) {
+            mCameraDevice4 = camera;
+            createPreviewSession4(camera);
+        }
+
+        @Override
+        public void onDisconnected(@NonNull CameraDevice camera) {
+            camera.close();
+        }
+
+        @Override
+        public void onError(@NonNull CameraDevice camera, int error) {
+            camera.close();
+        }
+    };
 
     /**
      * 获取权限
@@ -254,32 +313,34 @@ public class Camera2Activity extends Activity {
         try {
             //获取相机ID
             String[] cameraList = mCameraManager.getCameraIdList();
-            Log.e(TAG, cameraList[cameraId] + "");
             if (cameraList.length == 0) {
                 return;
             }
-            //创建图像数据流
-            mImageReader = ImageReader.newInstance(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, ImageFormat.JPEG, 2);
-            mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
-                @Override
-                public void onImageAvailable(ImageReader reader) {
-                    mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), file));
-                }
-            }, mBackgroundHandler);
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             //开启相机
-            mCameraManager.openCamera(cameraList[cameraId], mStateCallback, mBackgroundHandler);
+            switch (cameraId) {
+                case 0:
+                    mCameraManager.openCamera(cameraList[cameraId], mStateCallback1, mBackgroundHandler1);
+                    break;
+                case 1:
+                    mCameraManager.openCamera(cameraList[cameraId], mStateCallback2, mBackgroundHandler2);
+                    break;
+                case 2:
+                    mCameraManager.openCamera(cameraList[cameraId], mStateCallback3, mBackgroundHandler3);
+                    break;
+                case 3:
+                    mCameraManager.openCamera(cameraList[cameraId], mStateCallback4, mBackgroundHandler4);
+                    break;
+            }
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * 创建相机会话Capture回调，用于拍照预览
-     */
-    private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+    private CameraCaptureSession.CaptureCallback mCaptureCallback1 = new CameraCaptureSession.CaptureCallback() {
+
         private void process(CaptureResult result) {
 
             switch (mState) {
@@ -289,6 +350,73 @@ public class Camera2Activity extends Activity {
                 }
             }
         }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+            process(partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            process(result);
+        }
+    };
+
+    private CameraCaptureSession.CaptureCallback mCaptureCallback2 = new CameraCaptureSession.CaptureCallback() {
+        private void process(CaptureResult result) {
+
+            switch (mState) {
+                case STATE_PREVIEW: {
+
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+            process(partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            process(result);
+        }
+    };
+
+    private CameraCaptureSession.CaptureCallback mCaptureCallback3 = new CameraCaptureSession.CaptureCallback() {
+        private void process(CaptureResult result) {
+
+            switch (mState) {
+                case STATE_PREVIEW: {
+
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+            process(partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+            process(result);
+        }
+    };
+
+    private CameraCaptureSession.CaptureCallback mCaptureCallback4 = new CameraCaptureSession.CaptureCallback() {
+        private void process(CaptureResult result) {
+
+            switch (mState) {
+                case STATE_PREVIEW: {
+
+                    break;
+                }
+            }
+        }
+
         @Override
         public void onCaptureProgressed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
             process(partialResult);
@@ -301,34 +429,27 @@ public class Camera2Activity extends Activity {
     };
 
     /**
-     * 创建预览通道
+     * 创建预览Session
      */
-    private void createCameraPreviewSession() {
+    private void createPreviewSession1(final CameraDevice device) {
         try {
             //设置预览参数
             SurfaceTexture texture = mTextureView1.getSurfaceTexture();
             texture.setDefaultBufferSize(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT);
             Surface surface = new Surface(texture);
             //创建预览请求构造器
-            mPreviewRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mPreviewRequestBuilder.addTarget(surface);
-
-            //创建Session，新建会话状态回调StateCallback
-            mCameraDevice.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()), new CameraCaptureSession.StateCallback() {
+            final CaptureRequest.Builder builder = mCameraDevice1.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            builder.addTarget(surface);
+            //创建Session
+            mCameraDevice1.createCaptureSession(Arrays.asList(surface, mImageReader1.getSurface()), new CameraCaptureSession.StateCallback() {
                 @Override
                 public void onConfigured(@NonNull CameraCaptureSession session) {
-                    if (null == mCameraDevice) {
-                        return;
-                    }
-                    mCaptureSession = session;
+                    mCaptureSession1 = session;
                     try {
-                        //构造器设置自动对焦参数
-                        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-                        //创建预览请求
-                        mPreviewRequest = mPreviewRequestBuilder.build();
+                        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                        CaptureRequest request = builder.build();
                         mState = STATE_PREVIEW;
-                        //发起预览请求
-                        mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback, mBackgroundHandler);
+                        mCaptureSession1.setRepeatingRequest(request, mCaptureCallback1, mBackgroundHandler1);
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -338,8 +459,118 @@ public class Camera2Activity extends Activity {
                 public void onConfigureFailed(@NonNull CameraCaptureSession session) {
 
                 }
-            }, mBackgroundHandler);
+            }, mBackgroundHandler1);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * 创建预览Session
+     */
+    private void createPreviewSession2(final CameraDevice device) {
+        try {
+            //设置预览参数
+            SurfaceTexture texture = mTextureView2.getSurfaceTexture();
+            texture.setDefaultBufferSize(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT);
+            Surface surface = new Surface(texture);
+            //创建预览请求构造器
+            final CaptureRequest.Builder builder = mCameraDevice2.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            builder.addTarget(surface);
+            //创建Session
+            mCameraDevice2.createCaptureSession(Arrays.asList(surface, mImageReader2.getSurface()), new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession session) {
+                    mCaptureSession2 = session;
+                    try {
+                        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                        CaptureRequest request = builder.build();
+                        mState = STATE_PREVIEW;
+                        mCaptureSession2.setRepeatingRequest(request, mCaptureCallback2, mBackgroundHandler2);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+
+                }
+            }, mBackgroundHandler2);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 创建预览Session
+     */
+    private void createPreviewSession3(final CameraDevice device) {
+        try {
+            //设置预览参数
+            SurfaceTexture texture = mTextureView3.getSurfaceTexture();
+            texture.setDefaultBufferSize(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT);
+            Surface surface = new Surface(texture);
+            //创建预览请求构造器
+            final CaptureRequest.Builder builder = mCameraDevice3.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            builder.addTarget(surface);
+            //创建Session
+            mCameraDevice3.createCaptureSession(Arrays.asList(surface, mImageReader3.getSurface()), new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession session) {
+                    mCaptureSession3 = session;
+                    try {
+                        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                        CaptureRequest request = builder.build();
+                        mState = STATE_PREVIEW;
+                        mCaptureSession3.setRepeatingRequest(request, mCaptureCallback3, mBackgroundHandler3);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+
+                }
+            }, mBackgroundHandler3);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 创建预览Session
+     */
+    private void createPreviewSession4(final CameraDevice device) {
+        try {
+            //设置预览参数
+            SurfaceTexture texture = mTextureView4.getSurfaceTexture();
+            texture.setDefaultBufferSize(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT);
+            Surface surface = new Surface(texture);
+            //创建预览请求构造器
+            final CaptureRequest.Builder builder = mCameraDevice4.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            builder.addTarget(surface);
+            //创建Session
+            mCameraDevice4.createCaptureSession(Arrays.asList(surface, mImageReader4.getSurface()), new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession session) {
+                    mCaptureSession4 = session;
+                    try {
+                        builder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+                        CaptureRequest request = builder.build();
+                        mState = STATE_PREVIEW;
+                        mCaptureSession4.setRepeatingRequest(request, mCaptureCallback4, mBackgroundHandler4);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession session) {
+
+                }
+            }, mBackgroundHandler4);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -365,48 +596,174 @@ public class Camera2Activity extends Activity {
         }
     }
 
-    /**
-     * 开启后台进程
-     */
-    private void startBackgroundThread() {
-        mBackgroundThread = new HandlerThread("CameraBackground");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    private void startBackgroundThread1() {
+        mBackgroundThread1 = new HandlerThread("CameraBackground1");
+        mBackgroundThread1.start();
+        mBackgroundHandler1 = new Handler(mBackgroundThread1.getLooper());
+        mImageReader1 = ImageReader.newInstance(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, ImageFormat.JPEG, 2);
+        mImageReader1.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(ImageReader reader) {
+                mBackgroundHandler1.post(new ImageSaver(reader.acquireNextImage(), file));
+            }
+        }, mBackgroundHandler1);
+    }
+
+    private void startBackgroundThread2() {
+        mBackgroundThread2 = new HandlerThread("CameraBackground2");
+        mBackgroundThread2.start();
+        mBackgroundHandler2 = new Handler(mBackgroundThread2.getLooper());
+        mImageReader2 = ImageReader.newInstance(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, ImageFormat.JPEG, 2);
+        mImageReader2.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(ImageReader reader) {
+                mBackgroundHandler1.post(new ImageSaver(reader.acquireNextImage(), file));
+            }
+        }, mBackgroundHandler1);
+    }
+
+    private void startBackgroundThread3() {
+        mBackgroundThread3 = new HandlerThread("CameraBackground3");
+        mBackgroundThread3.start();
+        mBackgroundHandler3 = new Handler(mBackgroundThread3.getLooper());
+        mImageReader3 = ImageReader.newInstance(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, ImageFormat.JPEG, 2);
+        mImageReader3.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(ImageReader reader) {
+                mBackgroundHandler1.post(new ImageSaver(reader.acquireNextImage(), file));
+            }
+        }, mBackgroundHandler1);
+    }
+
+    private void startBackgroundThread4() {
+        mBackgroundThread4 = new HandlerThread("CameraBackground4");
+        mBackgroundThread4.start();
+        mBackgroundHandler4 = new Handler(mBackgroundThread4.getLooper());
+        mImageReader4 = ImageReader.newInstance(MAX_PREVIEW_WIDTH, MAX_PREVIEW_HEIGHT, ImageFormat.JPEG, 2);
+        mImageReader4.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(ImageReader reader) {
+                mBackgroundHandler1.post(new ImageSaver(reader.acquireNextImage(), file));
+            }
+        }, mBackgroundHandler1);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopBackgroundThread();
+        stopBackgroundThread1();
+        stopBackgroundThread2();
+        stopBackgroundThread3();
+        stopBackgroundThread4();
         releaseCamera();
     }
 
     /**
      * 关闭后台进程
      */
-    private void stopBackgroundThread() {
-        mBackgroundThread.quitSafely();
+    private void stopBackgroundThread1() {
+        mBackgroundThread1.quitSafely();
         try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
+            mBackgroundThread1.join();
+            mBackgroundThread1 = null;
+            mBackgroundHandler1 = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 关闭后台进程
+     */
+    private void stopBackgroundThread2() {
+        mBackgroundThread2.quitSafely();
+        try {
+            mBackgroundThread2.join();
+            mBackgroundThread2 = null;
+            mBackgroundHandler2 = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 关闭后台进程
+     */
+    private void stopBackgroundThread3() {
+        mBackgroundThread3.quitSafely();
+        try {
+            mBackgroundThread3.join();
+            mBackgroundThread3 = null;
+            mBackgroundHandler3 = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 关闭后台进程
+     */
+    private void stopBackgroundThread4() {
+        mBackgroundThread4.quitSafely();
+        try {
+            mBackgroundThread4.join();
+            mBackgroundThread4 = null;
+            mBackgroundHandler4 = null;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     public void releaseCamera() {
-        if (null != mCaptureSession) {
-            mCaptureSession.close();
-            mCaptureSession = null;
+        if (null != mCaptureSession1) {
+            mCaptureSession1.close();
+            mCaptureSession1 = null;
         }
-        if (null != mCameraDevice) {
-            mCameraDevice.close();
-            mCameraDevice = null;
+        if (null != mCameraDevice1) {
+            mCameraDevice1.close();
+            mCameraDevice1 = null;
         }
-        if (null != mImageReader) {
-            mImageReader.close();
-            mImageReader = null;
+        if (null != mCaptureSession2) {
+            mCaptureSession2.close();
+            mCaptureSession2 = null;
+        }
+        if (null != mCameraDevice2) {
+            mCameraDevice2.close();
+            mCameraDevice2 = null;
+        }
+        if (null != mCaptureSession3) {
+            mCaptureSession3.close();
+            mCaptureSession3 = null;
+        }
+        if (null != mCameraDevice3) {
+            mCameraDevice3.close();
+            mCameraDevice3 = null;
+        }
+        if (null != mCaptureSession4) {
+            mCaptureSession4.close();
+            mCaptureSession4 = null;
+        }
+        if (null != mCameraDevice4) {
+            mCameraDevice4.close();
+            mCameraDevice4 = null;
+        }
+        if (null != mImageReader1) {
+            mImageReader1.close();
+            mImageReader1 = null;
+        }
+        if (null != mImageReader2) {
+            mImageReader2.close();
+            mImageReader2 = null;
+        }
+        if (null != mImageReader3) {
+            mImageReader3.close();
+            mImageReader3 = null;
+        }
+        if (null != mImageReader4) {
+            mImageReader4.close();
+            mImageReader4 = null;
         }
     }
 }

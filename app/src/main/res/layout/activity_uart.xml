@@ -9,18 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"/>
     <Button
-        android:id="@+id/btn_write_file"
+        android:id="@+id/btn_uart_trans"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="文件写入/读取"
+        android:text="串口传输"
         android:textSize="40sp" />
-    <Button
-        android:id="@+id/btn_read_file"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="文件读取"
-        android:textSize="40sp"
-        android:visibility="gone"/>
     <Button
         android:id="@+id/btn_get_res"
         android:layout_width="match_parent"

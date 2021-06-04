@@ -59,6 +59,7 @@ public class EmmcActivity extends Activity {
             public void onClick(View view) {
                 btn_writefile.setEnabled(false);
                 btn_readfile.setEnabled(false);
+                btn_result.setEnabled(false);
                 copyCount = 0;
                 copyErr = 0;
                 handler.removeMessages(0);
@@ -90,10 +91,10 @@ public class EmmcActivity extends Activity {
         public boolean handleMessage(@NonNull Message message) {
             switch (message.what) {
                 case 0:
-                    runOnUiThread(new Runnable() {
+                    new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            if (copyCount < 4) {
+                            if (copyCount < 2000) {
                                 Log.e(TAG, "copy" + copyCount);
                                 if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                                     String path = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -127,21 +128,21 @@ public class EmmcActivity extends Activity {
                                 }
                                 long costTime = System.currentTimeMillis() - startTime;
                                 copyCount++;
-                                tv_msg.setText("写入文件次数" + copyCount);
+                                setText("写入文件次数" + copyCount);
                                 Log.e(TAG, "写文件" + copyCount);
                                 double speed = 989.9 / costTime * 1000;
                                 String result = copyCount + "次写入，失败次数" + copyErr + ",写入速度" + String.format("%.2f", speed) + "M/s";
                                 Utils.writeToFile(path + "/wemmc.txt", result);
-                                tv_msg.setText(result);
+                                setText(result);
                                 handler.sendEmptyMessageDelayed(0, 1000);
                             } else {
                                 handler.sendEmptyMessageDelayed(2, 1000);
                             }
                         }
-                    });
+                    }).start();
                     break;
                 case 1:
-                    runOnUiThread(new Runnable() {
+                    new Thread(new Runnable() {
                         @Override
                         public void run() {
                             if (readCount < 100000) {
@@ -153,26 +154,38 @@ public class EmmcActivity extends Activity {
                                 Log.e(TAG, "file length:" + read.length());
                                 long costTime = System.currentTimeMillis() - startTime;
                                 readCount++;
-                                tv_msg.setText("读取文件次数" + readCount);
+                                setText("读取文件次数" + readCount);
                                 double speed = 989.9 / costTime * 1000;
                                 String result = readCount + "次读取，失败次数" + readErr + ",读取速度" + String.format("%.2f", speed) + "M/s";
                                 Utils.writeToFile(path + "/remmc.txt", result);
-                                tv_msg.setText(result);
+                                setText(result);
                                 handler.sendEmptyMessageDelayed(1, 1000);
                             } else {
                                 handler.sendEmptyMessageDelayed(2, 1000);
                             }
                         }
-                    });
+                    }).start();
                     break;
                 case 2:
                     btn_writefile.setEnabled(true);
                     btn_readfile.setEnabled(true);
+                    btn_result.setEnabled(true);
+                    break;
+                case 3:
+                    String msgStr = (String) message.obj;
+                    tv_msg.setText(msgStr);
                     break;
             }
             return false;
         }
     });
+
+    private void setText(String s) {
+        Message msg = new Message();
+        msg.what = 3;
+        msg.obj = s;
+        handler.sendMessage(msg);
+    }
 
     public boolean cmdCopyFile(String oldPath, String newPath) {
         return Utils.runCmd("cp " + oldPath + " " + newPath);
