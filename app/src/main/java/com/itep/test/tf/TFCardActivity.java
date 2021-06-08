@@ -98,6 +98,7 @@ public class TFCardActivity extends Activity {
                         @Override
                         public void run() {
                             if (copyCount < 2000) {
+                                setText(String.format("第%d次写入文件", copyCount + 1));
                                 Log.e(TAG, "copy" + copyCount);
                                 if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                                     String path = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -150,6 +151,7 @@ public class TFCardActivity extends Activity {
                         @Override
                         public void run() {
                             if (readCount < 100000) {
+                                setText(String.format("第%d次读取文件", readCount + 1));
                                 long startTime = System.currentTimeMillis();
                                 String read = readStringFromFile(path + "/tf.txt");
                                 if (read.length() == 0) {

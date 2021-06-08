@@ -171,4 +171,34 @@ public class Utils {
         ad.setCanceledOnTouchOutside(true);
         return ad;
     }
+
+    /**
+     * HEX字符串转化byte数组
+     *
+     * @param hex 字符串
+     * @return byte数组
+     */
+    public static byte[] hexToBytes(String hex) {
+        int size = hex.length() / 2;
+        String hexString = hex.toUpperCase();
+        byte[] data = new byte[size];
+        for (int i = 0; i < size; i++) {
+            int high = hexString.charAt(i * 2) & 0xFF;
+            int low = hexString.charAt(i * 2 + 1) & 0xFF;
+            if (high >= '0' && high <= '9') {
+                high -= '0';
+            } else {//A-F
+                high -= 'A';
+                high += 10;
+            }
+            if (low >= '0' && low <= '9') {
+                low -= '0';
+            } else {//A-F
+                low -= 'A';
+                low += 10;
+            }
+            data[i] = (byte) ((high << 4) | low);
+        }
+        return data;
+    }
 }

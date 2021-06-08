@@ -96,6 +96,7 @@ public class EmmcActivity extends Activity {
                         public void run() {
                             if (copyCount < 2000) {
                                 Log.e(TAG, "copy" + copyCount);
+                                setText(String.format("第%d次写入文件", copyCount + 1));
                                 if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                                     String path = Environment.getExternalStorageDirectory().getAbsolutePath();
                                     Log.e(TAG, "sdpath" + path);
@@ -136,7 +137,7 @@ public class EmmcActivity extends Activity {
                                 setText(result);
                                 handler.sendEmptyMessageDelayed(0, 1000);
                             } else {
-                                handler.sendEmptyMessageDelayed(2, 1000);
+                                handler.sendEmptyMessageDelayed(1, 1000);
                             }
                         }
                     }).start();
@@ -146,6 +147,7 @@ public class EmmcActivity extends Activity {
                         @Override
                         public void run() {
                             if (readCount < 100000) {
+                                setText(String.format("第%d次读取文件", readCount + 1));
                                 long startTime = System.currentTimeMillis();
                                 String read = readStringFromFile(path + "/emmc.txt");
                                 if (read.length() == 0) {

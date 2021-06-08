@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -16,18 +14,13 @@ import com.itep.mt.common.sys.SysCommand;
 import com.itep.mt.common.sys.SysConf;
 import com.itep.test.baking.AdPlayerActivity;
 import com.itep.test.camera.Camera2Activity;
-import com.itep.test.camera.CameraActivity;
 import com.itep.test.emmc.EmmcActivity;
 import com.itep.test.hid.UartActivity;
 import com.itep.test.hid.UsbActivity;
 import com.itep.test.net.MainActivity;
+import com.itep.test.serial.SerialPortActivity;
 import com.itep.test.tf.TFCardActivity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -124,7 +117,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 startActivity(intent5);
                 break;
             case R.id.btn_uart_test:
-                Intent intent6 = new Intent(context, UartActivity.class);
+                Intent intent6 = new Intent(context, SerialPortActivity.class);
                 startActivity(intent6);
                 break;
         }

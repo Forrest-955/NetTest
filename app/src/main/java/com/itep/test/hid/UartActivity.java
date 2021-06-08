@@ -72,8 +72,7 @@ public class UartActivity extends Activity {
         btn_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(UartActivity.this, HomeActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
         resPath = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath();
@@ -133,16 +132,17 @@ public class UartActivity extends Activity {
             int fd = cu.uartopen("/dev/ttyS3", 9600);
             if (fd > 0) {
                 String teststr = "test";
-                byte[] file = File2byte();
-                byte[] buffer = new byte[file.length + 1];
+                byte[] buffer = new byte[4];
 
                 //自发自收
-                cu.uartwrite(fd, file);
+                cu.uartwrite(fd, teststr.getBytes());
                 Thread.sleep(100);//保证串口已经发送完毕，本机串口也接收完毕
                 cu.uartread(fd, buffer, 1000);
                 cu.uartclose(fd);
 
-                return true;
+                if (new String(buffer).compareTo(teststr) == 0) {
+                    return true;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

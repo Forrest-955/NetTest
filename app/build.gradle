@@ -40,4 +40,8 @@ dependencies {
     implementation project(path: ':ijkplayer-java')
     implementation project(path: ':libCameraView')
 
+    implementation(name: 'serialport-1.0.1', ext: 'aar')
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+
 }

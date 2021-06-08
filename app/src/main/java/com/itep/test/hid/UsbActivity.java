@@ -70,8 +70,7 @@ public class UsbActivity extends Activity {
         btn_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(UsbActivity.this, HomeActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
         resPath = Environment.getExternalStoragePublicDirectory("Download").getAbsolutePath();
